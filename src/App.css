@@ -1,38 +1,200 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@keyframes animateCloud {
+  0% {
+    left: -25vw;
+  }
+  100% {
+    left: 100vw;
   }
 }
 
-.App-header {
+@keyframes animateCloud1 {
+  0% {
+    left: -70vw;
+  }
+  100% {
+    left: 100vw;
+  }
+}
+
+@keyframes animateCloud2 {
+  0% {
+    left: -100vw;
+  }
+  100% {
+    left: 100vw;
+  }
+}
+
+@keyframes animateCloud3 {
+  0% {
+    left: -120vw;
+  }
+  100% {
+    left: 100vw;
+  }
+}
+
+@keyframes animateCloud5 {
+  0% {
+    left: -150vw;
+  }
+  100% {
+    left: 100vw;
+  }
+}
+
+.home-page {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+
+  overflow: hidden;
+
+  .play-icon {
+    position: relative;
+    transition: all 0.3s ease;
+
+    .cloud-1 {
+      position: absolute;
+      top: -20vh;
+      animation: animateCloud3 32s linear infinite;
+      z-index: 1;
+    }
+    .cloud-2 {
+      position: absolute;
+      top: 0;
+      z-index: 2;
+      animation: animateCloud2 29s linear infinite;
+    }
+    .cloud-3 {
+      position: absolute;
+      top: -20vh;
+      z-index: 2;
+      animation: animateCloud1 25s linear infinite;
+    }
+    .cloud-4 {
+      position: absolute;
+      top: 10vh;
+      z-index: 2;
+      animation: animateCloud 26s linear infinite;
+    }
+    .cloud-5 {
+      position: absolute;
+      top: 0;
+      z-index: 2;
+      animation: animateCloud5 32s linear infinite;
+    }
+    .play-icon-part-1 {
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      z-index: 6;
+      &:hover {
+        transform: scale(1.2);
+      }
+    }
+    .play-icon-part-2 {
+      position: absolute;
+      bottom: 5%;
+      left: 380px;
+      z-index: 6;
+    }
+    .play-icon-part-3 {
+      position: absolute;
+      bottom: 0;
+      left: 550px;
+      z-index: 6;
+    }
+  }
+  .home-page-blob-1 {
+    width: 500px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: 5;
+  }
+
+  .home-page-blob-2 {
+    width: 400px;
+    position: absolute;
+    bottom: 0;
+    left: 320px;
+    z-index: 5;
+  }
+
+  .home-page-blob-3 {
+    width: 350px;
+    position: absolute;
+    bottom: 0;
+    left: 150px;
+    z-index: 5;
+  }
+
+  .home-page-blob-4 {
+    width: 450px;
+    position: absolute;
+    bottom: 0;
+    right: 200px;
+    z-index: 5;
+  }
+
+  .home-page-blob-5 {
+    width: 750px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 4;
+  }
+
+  .home-language-btn {
+    background-color: #ffd54f;
+    font-family: 'Permanent Marker', cursive;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    z-index: 6;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    &:hover {
+      background-color: #fbde7d;
+    }
+
+
+    svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    &.selected.home-language-btn {
+      background-color: #d5ee7a;
+    }
+  }
+ .home-language-btn-menu{
+   .home-language-btn{
+     background-color: #fdffb3;
+   }
+
+    }
+  .eng {
+    top: 50px;
+  }
+
+  .port {
+    top: 90px;
+  }
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+@media screen and (max-width: 1600px) {
 }
