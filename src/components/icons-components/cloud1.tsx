@@ -1,12 +1,12 @@
 import React from 'react';
 
-export default function Cloud1() {
+export default function Cloud1({ className }: { className: string }) {
   return (
     <svg
-      className="cloud-1"
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
-      width="180"
-      height="100"
+      width="280"
+      height="200"
       viewBox="0 0 319 188"
       fill="none">
       <path

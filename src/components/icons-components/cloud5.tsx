@@ -1,12 +1,12 @@
 import React from 'react';
 
-export default function Cloud5() {
+export default function Cloud5({ className }: { className: string }) {
   return (
     <svg
-      className="cloud-5"
+      className={className}
       xmlns="http://www.w3.org/2000/svg"
-      width="167"
-      height="135"
+      width="207"
+      height="205"
       viewBox="0 0 267 135"
       fill="none">
       <path

@@ -1,27 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
-import './game-component.scss';
-import { images } from '../assets/words-array';
-import { wordsSoundsEng, wordsSoundsPort } from '../assets/words-pronunciation';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import styles from './game-component.module.scss';
+import { images } from '../../assets/images';
+import { wordsSoundsEng, wordsSoundsPort } from '../../assets/audio';
 import { animated, useSpring } from 'react-spring';
 
-import wrongAnswerSound from '../assets/sounds/wrongAnswer.mp3';
-import rightAnswerSound from '../assets/sounds/rightAnswer.mp3';
+import wrongAnswerSound from '../../assets/sounds/wrongAnswer.mp3';
+import rightAnswerSound from '../../assets/sounds/rightAnswer.mp3';
 import {
   blob1Paths,
   blob2Paths,
   blob3Paths,
   blob4Paths,
   colors,
-} from '../assets/const/blobs-paths';
-import home from '../assets/menu-icons/home.png';
+} from '../icons-components/blobs-paths';
 import ThumbIcon from '../icons-components/thumb-icon';
-import RepeatIcon from '../assets/menu-icons/repeat-icon';
-import MixIcon from '../assets/menu-icons/mix-icon';
+import RepeatIcon from '../icons-components/repeat-icon';
+import MixIcon from '../icons-components/mix-icon';
 import {
   langTranslations,
   languageComponents,
   languageLabels,
-} from '../assets/const/language-info';
+} from '../../const/language-info';
+import HomeIcon from '../icons-components/home-icon';
+import reset from '../../assets/menu-icons/reset.png';
 
 let currentFourWords: string[] = [];
 
@@ -31,18 +32,27 @@ interface Props {
 }
 
 export default function GameComponent({ setGameStarted, selectedLang }: Props) {
-  const wordsArray = Object.keys(images).map((key) => {
-    return {
-      imgUrl: images[key],
-      label: key.replace('.png', '').replace('-', ' ').toUpperCase(), //probably it s better to form portugal word here
-      isUsed: false,
-      sound: getPronunciation(key),
-    };
-  });
+  const wordsArray = useMemo(
+    () =>
+      Object.keys(images).map((key) => {
+        return {
+          imgUrl: images[key],
+          label: getTranslation(selectedLang, key.replace('.png', '')),
+          isUsed: false,
+          sound: getPronunciation(key.replace('.png', '')),
+        };
+      }),
+    [selectedLang],
+  );
 
   const LanguageIcon = languageComponents[selectedLang];
 
   const wordsArr = useRef(wordsArray);
+
+  useEffect(() => {
+    wordsArr.current = wordsArray;
+  }, [wordsArray]);
+
   let [wordsCounter, setWordsCounter] = useState(0);
   let [trainingLearned, setTrainingLearned] = useState(false);
 
@@ -59,6 +69,25 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
     setWord(getWord());
     setToggleIconsAppear(true);
   }, [indexes]);
+
+  const isFirstMount = useRef(true);
+
+  useEffect(() => {
+    //exclude on mount execution:
+    if (!isFirstMount.current) {
+      setNewIndexes();
+    }
+    isFirstMount.current = false;
+  }, [trainingLearned]);
+
+  useEffect(() => {
+    if (localStorage.getItem('wordsArrayStorage')) {
+      wordsArr.current = JSON.parse(
+        localStorage.getItem('wordsArrayStorage') as string,
+      );
+      setWordsCounter(wordsArr.current.filter((word) => word.isUsed).length);
+    }
+  }, []);
 
   let [word, setWord] = useState('');
 
@@ -95,21 +124,19 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
   });
 
   return (
-    <div className="game-component">
-      <button onClick={() => setGameStarted(false)} className="home-btn">
-        <img alt="home" src={home} />
-      </button>
-      <div className="word-container">
-        <h1 className="word">
-          {selectedLang === 'eng' ? word : getTranslation(selectedLang, word)}
-        </h1>
+    <div className={styles.gameComponent}>
+      <div onClick={() => setGameStarted(false)} className={styles.homeBtn}>
+        <HomeIcon />
       </div>
-      <div className="counter">{wordsCounter}</div>
+      <div className={styles.wordContainer}>
+        {!toggleThumbIcon && <h1 className={styles.word}>{word}</h1>}
+      </div>
+      <div className={styles.counter}>{wordsCounter}</div>
 
-      <button className="right-panel-btn language-btn">
-        <div className="overflowed-content">
+      <button className={`${styles.rightPanelBtn} ${styles.languageBtn}`}>
+        <div className={styles.overflowedContent}>
           <LanguageIcon />
-          <span className="right-panel-words-text">
+          <span className={styles.rightPanelWordsText}>
             {languageLabels[selectedLang]}
           </span>
         </div>
@@ -118,20 +145,21 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
       <button
         disabled={wordsCounter < 4}
         className={
-          ' right-panel-btn repeating-mode-btn ' +
-          (trainingLearned ? 'active' : '')
+          `${styles.rightPanelBtn} ${styles.repeatingModeBtn} ` +
+          (trainingLearned ? styles.active : '')
         }
         onClick={() => {
           setTrainingLearned(true);
-          setNewIndexes();
         }}>
-        <div className="overflowed-content">
-          <RepeatIcon color={wordsCounter < 4 ? '#adb0b7' : '#282c34'} />
-          <span className="right-panel-words-text">REPEAT LEARNED WORDS</span>
+        <div className={styles.overflowedContent}>
+          <RepeatIcon color={wordsCounter < 4 ? '#7f7f7f' : '#282c34'} />
+          <span className={styles.rightPanelWordsText}>
+            REPEAT LEARNED WORDS
+          </span>
         </div>
 
         {wordsCounter < 4 && (
-          <div className="repeating-mode-tooltip">
+          <div className={styles.repeatingModeTooltip}>
             <span>You need to learn at least 4 words</span>
           </div>
         )}
@@ -139,19 +167,38 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
 
       <button
         className={
-          'right-panel-btn mix-words-btn ' + (!trainingLearned ? 'active' : '')
+          `${styles.rightPanelBtn} ${styles.mixWordsBtn} ` +
+          (!trainingLearned ? styles.active : '')
         }
         onClick={() => {
-          setTrainingLearned(false);
-          setNewIndexes();
+          if (trainingLearned) {
+            setTrainingLearned(false);
+          }
         }}>
-        <div className="overflowed-content">
+        <div className={styles.overflowedContent}>
           <MixIcon color="#282c34" />
-          <span className="right-panel-words-text">LEARN WORDS</span>
+          <span className={styles.rightPanelWordsText}>LEARN WORDS</span>
         </div>
       </button>
+
+      <button
+        className={`${styles.rightPanelBtn} ${styles.reset}`}
+        onClick={() => {
+          localStorage.removeItem('wordsArrayStorage');
+          setWordsCounter(0);
+          setTrainingLearned(false);
+          wordsArr.current.forEach((obj) => (obj.isUsed = false));
+        }}>
+        <div className={styles.overflowedContent}>
+          <img className={styles.resetIcon} src={reset} />
+          <span className={styles.rightPanelWordsText}>
+            RESET LEARNED WORDS
+          </span>
+        </div>
+      </button>
+
       <svg
-        className="wrong-answer"
+        className={styles.wrongAnswer}
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 700 800"
         fill="none">
@@ -166,9 +213,9 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
         </animated.g>
       </svg>
 
-      <div className="pictures">
+      <div className={styles.pictures}>
         <svg
-          className="blob-svg"
+          className={styles.blobSvg}
           viewBox="0 0 2000 950"
           fill="none"
           xmlns="http://www.w3.org/2000/svg">
@@ -177,7 +224,7 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
               setActiveIndex(1);
             }}
             onMouseLeave={() => setActiveIndex(0)}
-            className="blob1"
+            className={styles.blob1}
             d={animationProps.blob1Path}
             fill={colorsRandom[0]}
             transform="translate(10 10)"
@@ -188,7 +235,7 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
               setActiveIndex(4);
             }}
             onMouseLeave={() => setActiveIndex(0)}
-            className="blob2"
+            className={styles.blob2}
             d={animationProps.blob2Path}
             fill={colorsRandom[1]}
             transform-origin="100% 100%"
@@ -199,7 +246,7 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
               setActiveIndex(2);
             }}
             onMouseLeave={() => setActiveIndex(0)}
-            className="blob3"
+            className={styles.blob3}
             d={animationProps.blob3Path}
             fill={colorsRandom[2]}
             transform-origin="100% 100%"
@@ -210,7 +257,7 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
               setActiveIndex(3);
             }}
             onMouseLeave={() => setActiveIndex(0)}
-            className="blob4"
+            className={styles.blob4}
             d={animationProps.blob4Path}
             fill={colorsRandom[3]}
             transform-origin="100% 100%"
@@ -222,14 +269,14 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
             transformBox: 'fill-box',
             ...springIconsAppear,
           }}
-          className="wordImage"
+          className={styles.wordImage}
           onClick={() => chooseImage(indexes[0])}>
           <img
             onMouseEnter={() => {
               setActiveIndex(1);
             }}
             onMouseLeave={() => setActiveIndex(0)}
-            className="wordImageImg"
+            className={styles.wordImageImg}
             src={wordsArr.current[indexes[0]].imgUrl}></img>
         </animated.div>
 
@@ -239,14 +286,14 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
             transformBox: 'fill-box',
             ...springIconsAppear,
           }}
-          className="wordImage"
+          className={styles.wordImage}
           onClick={() => chooseImage(indexes[1])}>
           <img
             onMouseEnter={() => {
               setActiveIndex(4);
             }}
             onMouseLeave={() => setActiveIndex(0)}
-            className="wordImageImg"
+            className={styles.wordImageImg}
             src={wordsArr.current[indexes[1]].imgUrl}></img>
         </animated.div>
 
@@ -256,14 +303,14 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
             transformBox: 'fill-box',
             ...springIconsAppear,
           }}
-          className="wordImage"
+          className={styles.wordImage}
           onClick={() => chooseImage(indexes[2])}>
           <img
             onMouseEnter={() => {
               setActiveIndex(2);
             }}
             onMouseLeave={() => setActiveIndex(0)}
-            className="wordImageImg"
+            className={styles.wordImageImg}
             src={wordsArr.current[indexes[2]].imgUrl}></img>
         </animated.div>
 
@@ -273,14 +320,14 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
             transformBox: 'fill-box',
             ...springIconsAppear,
           }}
-          className="wordImage"
+          className={styles.wordImage}
           onClick={() => chooseImage(indexes[3])}>
           <img
             onMouseEnter={() => {
               setActiveIndex(3);
             }}
             onMouseLeave={() => setActiveIndex(0)}
-            className="wordImageImg"
+            className={styles.wordImageImg}
             src={wordsArr.current[indexes[3]].imgUrl}></img>
         </animated.div>
       </div>
@@ -320,8 +367,11 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
       }
       setToggleIconsAppear(false);
       setTimeout(() => setNewIndexes(), 1000);
-
       wordsArr.current[index].isUsed = true;
+      localStorage.setItem(
+        'wordsArrayStorage',
+        JSON.stringify(wordsArr.current),
+      );
     } else {
       setRightAnswerIcon(false);
       new Audio(wrongAnswerSound).play();
@@ -353,15 +403,16 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
     ];
   }
 
-  function getTranslation(lang: string, word: string) {
-    return langTranslations?.[word.toLowerCase().replace(/ /g, '')]?.[lang];
+  function getTranslation(lang: string, key: string) {
+    if (lang === 'eng') {
+      return key.replace('-', ' ');
+    }
+    return langTranslations?.[key]?.[lang];
   }
 
   function getPronunciation(key: string) {
     return selectedLang === 'eng'
-      ? wordsSoundsEng[key.replace('.png', '')]
-      : wordsSoundsPort?.[
-          langTranslations?.[key?.replace('.png', '').replace('-', '')]?.port
-        ];
+      ? wordsSoundsEng[key]
+      : wordsSoundsPort?.[langTranslations?.[key]?.port];
   }
 }
