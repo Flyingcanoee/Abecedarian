@@ -3,7 +3,6 @@ import styles from './home-component.module.scss';
 import { blobPlay1 } from '../icons-components/blobs-paths';
 import { languageComponents } from '../../const/language-info';
 import Cloud2 from '../icons-components/cloud2';
-import Cloud3 from '../icons-components/cloud3';
 import Cloud4 from '../icons-components/cloud4';
 import Cloud5 from '../icons-components/cloud5';
 import Cloud1 from '../icons-components/cloud1';
@@ -81,7 +80,6 @@ function Home({ selectedLanguage, setSelectedLang, setGameStarted }: Props) {
         <div className={styles.playIcon} onClick={() => setGameStarted(true)}>
           <Cloud1 className={styles.cloud1} />
           <Cloud2 className={styles.cloud2} />
-          {/*<Cloud3 className={styles.cloud3} />*/}
           <Cloud4 className={styles.cloud4} />
           <Cloud5 className={styles.cloud5} />
           <svg
