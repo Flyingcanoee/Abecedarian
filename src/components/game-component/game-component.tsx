@@ -73,7 +73,6 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
   const isFirstMount = useRef(true);
 
   useEffect(() => {
-    //exclude on mount execution:
     if (!isFirstMount.current) {
       setNewIndexes();
     }
