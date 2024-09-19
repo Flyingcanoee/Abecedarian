@@ -54,6 +54,7 @@
   "devDependencies": {
     "@types/matter-js": "^0.19.7",
     "eslint-plugin-prettier": "^5.0.0",
-    "prettier": "3.3.3"
+    "prettier": "3.3.3",
+    "@babel/plugin-proposal-private-property-in-object" : "7.21.0-placeholder-for-preset-env.2"
   }
 }
