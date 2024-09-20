@@ -42,6 +42,7 @@ $activeButtonColor: rgb(106, 179, 106);
 .pictures {
   display: flex;
   flex-wrap: wrap;
+  overflow: hidden;
 }
 .wordImage {
   width: 50%;
