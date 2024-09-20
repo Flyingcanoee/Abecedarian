@@ -15,7 +15,6 @@ The game is written using `React`, `Typescript`, `CSS modules` and `React Spring
 
 To run the project use:
 ### `npm start`
-
-_`docs` folder doesn't contain documentation, it's for uploading to GitHub Pages_ 
+ 
 
 _Majority of the pictures was taken from free Clipart source (https://icons8.com/illustrations), and some were manually drawn by me._
