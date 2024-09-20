@@ -46,7 +46,6 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
   );
 
   const LanguageIcon = languageComponents[selectedLang];
-
   const wordsArr = useRef(wordsArray);
 
   useEffect(() => {
@@ -55,6 +54,7 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
 
   let [wordsCounter, setWordsCounter] = useState(0);
   let [trainingLearned, setTrainingLearned] = useState(false);
+  const cachedImageURLs = useRef(new Set());
 
   let [indexes, setIndexes] = useState(() => [
     getRandomIdx(),
@@ -67,9 +67,6 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
 
   useEffect(() => {
     setWord(getWord());
-    // if (loadedImagesCount === 4) {
-    //   setToggleIconsAppear(true);
-    // }
   }, [indexes]);
 
   const isFirstMount = useRef(true);
@@ -276,7 +273,9 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
           className={styles.wordImage}
           onClick={() => chooseImage(indexes[0])}>
           <img
-            onLoad={() => updateLoadedImagesCount()}
+            onLoad={() =>
+              updateLoadedImagesCount(wordsArr.current[indexes[0]].imgUrl)
+            }
             onMouseLeave={() => setActiveIndex(0)}
             className={styles.wordImageImg}
             src={wordsArr.current[indexes[0]].imgUrl}></img>
@@ -291,7 +290,9 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
           className={styles.wordImage}
           onClick={() => chooseImage(indexes[1])}>
           <img
-            onLoad={() => updateLoadedImagesCount()}
+            onLoad={() =>
+              updateLoadedImagesCount(wordsArr.current[indexes[1]].imgUrl)
+            }
             onMouseEnter={() => {
               setActiveIndex(4);
             }}
@@ -309,7 +310,9 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
           className={styles.wordImage}
           onClick={() => chooseImage(indexes[2])}>
           <img
-            onLoad={() => updateLoadedImagesCount()}
+            onLoad={() =>
+              updateLoadedImagesCount(wordsArr.current[indexes[2]].imgUrl)
+            }
             onMouseEnter={() => {
               setActiveIndex(2);
             }}
@@ -327,7 +330,9 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
           className={styles.wordImage}
           onClick={() => chooseImage(indexes[3])}>
           <img
-            onLoad={() => updateLoadedImagesCount()}
+            onLoad={() =>
+              updateLoadedImagesCount(wordsArr.current[indexes[3]].imgUrl)
+            }
             onMouseEnter={() => {
               setActiveIndex(3);
             }}
@@ -351,6 +356,9 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
     });
 
     currentFourWords.push(wordsArr.current[wordsArrInd].label);
+    if (cachedImageURLs.current.has(wordsArr.current[wordsArrInd].imgUrl)) {
+      loadedImagesCount.current++;
+    }
     return wordsArrInd;
   }
 
@@ -422,8 +430,11 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
       : wordsSoundsPort?.[langTranslations?.[key]?.port];
   }
 
-  function updateLoadedImagesCount() {
-    loadedImagesCount.current++;
+  function updateLoadedImagesCount(imgUrl: string) {
+    if (!cachedImageURLs.current.has(imgUrl)) {
+      cachedImageURLs.current.add(imgUrl);
+      loadedImagesCount.current++;
+    }
     if (loadedImagesCount.current === 4) {
       setToggleIconsAppear(true);
     }
