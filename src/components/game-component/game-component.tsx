@@ -276,6 +276,9 @@ export default function GameComponent({ setGameStarted, selectedLang }: Props) {
             onLoad={() =>
               updateLoadedImagesCount(wordsArr.current[indexes[0]].imgUrl)
             }
+            onMouseEnter={() => {
+              setActiveIndex(1);
+            }}
             onMouseLeave={() => setActiveIndex(0)}
             className={styles.wordImageImg}
             src={wordsArr.current[indexes[0]].imgUrl}></img>
