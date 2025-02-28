@@ -10,6 +10,7 @@ $activeButtonColor: rgb(106, 179, 106);
   align-items: center;
   justify-content: center;
   color: white;
+  user-select: none;
 }
 
 .wordContainer {
@@ -212,7 +213,7 @@ $activeButtonColor: rgb(106, 179, 106);
   }
 
   &:hover {
-    width: 220px;
+    width: 225px;
     border-radius: 10px;
     justify-content: start;
     div.overflowedContent {
